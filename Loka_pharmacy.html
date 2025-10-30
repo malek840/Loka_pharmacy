@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Loka_ pharmacy</title>
+<style>
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin:0; background:#f5f5f5; color:#333; transition: background 0.3s, color 0.3s; }
+    body.dark { background:#1c1c1c; color:#eee; }
+    header { background:#fff; padding:20px; text-align:center; box-shadow:0 2px 5px rgba(0,0,0,0.1); transition: background 0.3s, color 0.3s; }
+    body.dark header { background:#222; color:#eee; }
+    header h1 { margin:0; font-size:2em; color:#27ae60; }
+    .container { display:flex; padding:20px; gap:20px; }
+    .products { flex:3; display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:20px; }
+    .product { background:#fff; padding:10px; border-radius:8px; box-shadow:0 2px 5px rgba(0,0,0,0.1); text-align:center; transition: background 0.3s, color 0.3s; }
+    body.dark .product { background:#333; color:#eee; }
+    .product img { width:100px; height:100px; object-fit:contain; margin-bottom:10px; }
+    .product h3 { font-size:1em; margin:5px 0; }
+    .product p { margin:5px 0; color:#27ae60; font-weight:bold; }
+    .product button { padding:5px 10px; background:#27ae60; border:none; color:#fff; border-radius:5px; cursor:pointer; }
+    .product button:hover { background:#219150; }
+    .cart { width:250px; background:#fff; padding:10px; border-radius:8px; box-shadow:0 2px 5px rgba(0,0,0,0.1); max-height:80vh; overflow-y:auto; position:fixed; top:20px; left:20px; transition: background 0.3s, color 0.3s; }
+    body.dark .cart { background:#222; color:#eee; }
+    .cart h2 { text-align:center; margin-top:0; color:#27ae60; }
+    .cart-item { display:flex; justify-content:space-between; margin:5px 0; padding-bottom:5px; border-bottom:1px solid #ddd; }
+    body.dark .cart-item { border-bottom:1px solid #555; }
+    .cart-item span { font-weight:bold; }
+    .purchase-btn { width:100%; padding:10px; margin-top:10px; background:#e74c3c; color:#fff; border:none; border-radius:5px; cursor:pointer; }
+    .purchase-btn:hover { background:#c0392b; }
+    .color-toggle { position:fixed; top:20px; right:20px; padding:10px; background:#27ae60; color:#fff; border:none; border-radius:5px; cursor:pointer; }
+    .color-toggle:hover { background:#219150; }
+</style>
+</head>
+<body>
+<header>
+<h1>Loka_ pharmacy</h1>
+</header>
+<button class="color-toggle" onclick="toggleColor()">تغيير اللون</button>
+<div class="container">
+<div class="products" id="products"></div>
+</div>
+<div class="cart">
+<h2>عربة المشتريات</h2>
+<div id="cart-items"></div>
+<button class="purchase-btn" onclick="purchase()">شراء</button>
+</div>
+<script>
+function toggleColor(){
+  document.body.classList.toggle('dark');
+}
+
+const productsData = [
+  {name:'بانادول', price:10, img:'https://via.placeholder.com/100?text=بانادول'},
+  {name:'فولتارين', price:20, img:'https://via.placeholder.com/100?text=فولتارين'},
+  {name:'كتافلام', price:15, img:'https://via.placeholder.com/100?text=كتافلام'},
+  {name:'أموكسيل', price:25, img:'https://via.placeholder.com/100?text=أموكسيل'},
+  {name:'باراسيتامول', price:12, img:'https://via.placeholder.com/100?text=باراسيتامول'},
+  {name:'إيبوبروفين', price:18, img:'https://via.placeholder.com/100?text=إيبوبروفين'},
+  {name:'سيتال', price:22, img:'https://via.placeholder.com/100?text=سيتال'},
+  {name:'لورين', price:14, img:'https://via.placeholder.com/100?text=لورين'},
+  {name:'أوجمنتين', price:30, img:'https://via.placeholder.com/100?text=أوجمنتين'},
+  {name:'ريفامبيسين', price:28, img:'https://via.placeholder.com/100?text=ريفامبيسين'}
+];
+
+let products=[];
+while(products.length<200){
+  products = products.concat(productsData);
+}
+products = products.slice(0,200);
+
+const productsContainer = document.getElementById('products');
+const cartItemsContainer = document.getElementById('cart-items');
+let cart = [];
+
+function renderProducts(){
+  productsContainer.innerHTML='';
+  products.forEach((p,i)=>{
+    const div = document.createElement('div');
+    div.className='product';
+    div.innerHTML=`
+      <img src='${p.img}' alt='${p.name}'>
+      <h3>${p.name}</h3>
+      <p>${p.price} جنيه</p>
+      <button onclick='addToCart(${i})'>أضف إلى السلة</button>
+    `;
+    productsContainer.appendChild(div);
+  });
+}
+
+function addToCart(index){
+  cart.push(products[index]);
+  renderCart();
+}
+
+function renderCart(){
+  cartItemsContainer.innerHTML='';
+  cart.forEach((item,i)=>{
+    const div=document.createElement('div');
+    div.className='cart-item';
+    div.innerHTML=`<span>${item.name}</span><span>${item.price} جنيه</span>`;
+    cartItemsContainer.appendChild(div);
+  });
+}
+
+function purchase(){
+  if(cart.length===0){
+    alert('العربة فارغة!');
+    return;
+  }
+  alert('شكرًا على استخدام دواانا، ونتمنى لك الشفاء.');
+  cart=[];
+  renderCart();
+}
+
+renderProducts();
+</script>
+</body>
+</html>
