@@ -103,10 +103,12 @@ function renderCart(){
   cartItemsContainer.innerHTML='';
   // summary info
   const totalItems = cart.length;
-  const distinct = [...new Set(cart.map(i=>i.name))].length;
+  const distinctNames = [...new Set(cart.map(i=>i.name))];
+  const distinct = distinctNames.length;
   const totalPrice = cart.reduce((sum,i)=>sum+i.price,0);
   const summaryEl = document.getElementById('cart-summary');
-  summaryEl.innerHTML = `عدد العناصر: ${totalItems} <br>عدد المنتجات المختلفة: ${distinct} <br>الإجمالي: ${totalPrice} جنيه`;
+  summaryEl.innerHTML = `عدد العناصر: ${totalItems} <br>عدد المنتجات المختلفة: ${distinct} <br>الإجمالي: ${totalPrice} جنيه` +
+                        `<br>الأسماء: ${distinctNames.join(', ')}`;
 
   cart.forEach((item,i)=>{
     const div=document.createElement('div');
