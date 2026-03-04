@@ -57,16 +57,16 @@ function toggleColor(){
 }
 
 const productsData = [
-  {name:'بانادول', price:10, img:'https://via.placeholder.com/100?text=بانادول'},
-  {name:'فولتارين', price:20, img:'https://via.placeholder.com/100?text=فولتارين'},
-  {name:'كتافلام', price:15, img:'https://via.placeholder.com/100?text=كتافلام'},
-  {name:'أموكسيل', price:25, img:'https://via.placeholder.com/100?text=أموكسيل'},
-  {name:'باراسيتامول', price:12, img:'https://via.placeholder.com/100?text=باراسيتامول'},
-  {name:'إيبوبروفين', price:18, img:'https://via.placeholder.com/100?text=إيبوبروفين'},
-  {name:'سيتال', price:22, img:'https://via.placeholder.com/100?text=سيتال'},
-  {name:'لورين', price:14, img:'https://via.placeholder.com/100?text=لورين'},
-  {name:'أوجمنتين', price:30, img:'https://via.placeholder.com/100?text=أوجمنتين'},
-  {name:'ريفامبيسين', price:28, img:'https://via.placeholder.com/100?text=ريفامبيسين'}
+  {name:'بانادول', priceStrip:10, priceBox:15, img:'https://via.placeholder.com/100?text=بانادول'},
+  {name:'فولتارين', priceStrip:20, priceBox:25, img:'https://via.placeholder.com/100?text=فولتارين'},
+  {name:'كتافلام', priceStrip:15, priceBox:20, img:'https://via.placeholder.com/100?text=كتافلام'},
+  {name:'أموكسيل', priceStrip:25, priceBox:30, img:'https://via.placeholder.com/100?text=أموكسيل'},
+  {name:'باراسيتامول', priceStrip:12, priceBox:17, img:'https://via.placeholder.com/100?text=باراسيتامول'},
+  {name:'إيبوبروفين', priceStrip:18, priceBox:23, img:'https://via.placeholder.com/100?text=إيبوبروفين'},
+  {name:'سيتال', priceStrip:22, priceBox:27, img:'https://via.placeholder.com/100?text=سيتال'},
+  {name:'لورين', priceStrip:14, priceBox:19, img:'https://via.placeholder.com/100?text=لورين'},
+  {name:'أوجمنتين', priceStrip:30, priceBox:35, img:'https://via.placeholder.com/100?text=أوجمنتين'},
+  {name:'ريفامبيسين', priceStrip:28, priceBox:33, img:'https://via.placeholder.com/100?text=ريفامبيسين'}
 ];
 
 let products=[];
@@ -87,16 +87,29 @@ function renderProducts(){
     div.innerHTML=`
       <img src='${p.img}' alt='${p.name}'>
       <h3>${p.name}</h3>
-      <p>${p.price} جنيه</p>
-      <button onclick='addToCart(${i})'>أضف إلى السلة</button>
+      <p>شريط: ${p.priceStrip} جنيه<br>علبة: ${p.priceBox} جنيه</p>
+      <button onclick='chooseType(${i})'>أضف إلى السلة</button>
     `;
     productsContainer.appendChild(div);
   });
 }
 
-function addToCart(index){
-  cart.push(products[index]);
+function chooseType(index){
+  const product = products[index];
+  const choice = confirm(`${product.name}\nشريط: ${product.priceStrip} جنيه\nعلبة: ${product.priceBox} جنيه\n\nاختر OK للعلبة، إلغاء للشريط`);
+  
+  if(choice){
+    // علبة
+    cart.push({name: product.name, price: product.priceBox, type: 'علبة'});
+  } else {
+    // شريط
+    cart.push({name: product.name, price: product.priceStrip, type: 'شريط'});
+  }
   renderCart();
+}
+
+function addToCart(index){
+  chooseType(index);
 }
 
 function renderCart(){
@@ -113,7 +126,7 @@ function renderCart(){
   cart.forEach((item,i)=>{
     const div=document.createElement('div');
     div.className='cart-item';
-    div.innerHTML=`<span>${item.name}</span><span>${item.price} جنيه</span>`;
+    div.innerHTML=`<span>${item.name} (${item.type})</span><span>${item.price} جنيه</span>`;
     cartItemsContainer.appendChild(div);
   });
 }
@@ -130,7 +143,10 @@ function purchase(){
   const totalItems = cart.length;
   const distinct = [...new Set(cart.map(i=>i.name))].length;
   const totalPrice = cart.reduce((sum,i)=>sum+i.price,0);
-  const message = encodeURIComponent(`تم الشراء: ${totalItems} عنصر (${distinct} منتج مختلف) - الإجمالي ${totalPrice} جنيه`);
+  
+  // include product details with types
+  const details = cart.map(item => `• ${item.name} (${item.type})`).join('\n');
+  const message = encodeURIComponent(`تم الشراء:\n${details}\n\nالإجمالي: ${totalPrice} جنيه`);
 
   // open WhatsApp link
   window.open(`https://wa.me/201097074813?text=${message}`, '_blank');
@@ -141,6 +157,12 @@ function purchase(){
   renderCart();
 }
 
+// prepare full list with price fields handled
+products = products.map(p=>({
+  ...p,
+  priceStrip: p.priceStrip || p.price,
+  priceBox: p.priceBox || (p.price + 5)
+}));
 renderProducts();
 </script>
 </body>
