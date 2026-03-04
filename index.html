@@ -23,6 +23,7 @@
     .cart { width:250px; background:#fff; padding:10px; border-radius:8px; box-shadow:0 2px 5px rgba(0,0,0,0.1); max-height:80vh; overflow-y:auto; position:fixed; top:20px; left:20px; transition: background 0.3s, color 0.3s; }
     body.dark .cart { background:#222; color:#eee; }
     .cart h2 { text-align:center; margin-top:0; color:#27ae60; }
+    #cart-summary { font-size:0.9em; line-height:1.4; }
     .cart-item { display:flex; justify-content:space-between; margin:5px 0; padding-bottom:5px; border-bottom:1px solid #ddd; }
     body.dark .cart-item { border-bottom:1px solid #555; }
     .cart-item span { font-weight:bold; }
@@ -45,6 +46,8 @@
 </div>
 <div class="cart">
 <h2>عربة المشتريات</h2>
+<!-- summary will show number of items, distinct products and total price -->
+<div id="cart-summary" style="text-align:center; margin-bottom:10px;"></div>
 <div id="cart-items"></div>
 <button class="purchase-btn" onclick="purchase()">شراء</button>
 </div>
@@ -98,6 +101,13 @@ function addToCart(index){
 
 function renderCart(){
   cartItemsContainer.innerHTML='';
+  // summary info
+  const totalItems = cart.length;
+  const distinct = [...new Set(cart.map(i=>i.name))].length;
+  const totalPrice = cart.reduce((sum,i)=>sum+i.price,0);
+  const summaryEl = document.getElementById('cart-summary');
+  summaryEl.innerHTML = `عدد العناصر: ${totalItems} <br>عدد المنتجات المختلفة: ${distinct} <br>الإجمالي: ${totalPrice} جنيه`;
+
   cart.forEach((item,i)=>{
     const div=document.createElement('div');
     div.className='cart-item';
@@ -111,14 +121,20 @@ function purchase(){
     alert('العربة فارغة!');
     return;
   }
-  alert('شكرًا على استخدام دواانا، ونتمنى لك الشفاء.');
-  // open WhatsApp or SMS to notify the seller at the requested number
-  const message = encodeURIComponent('لقد قمت بشراء منتجات من موقع Loka pharmacy.');
-  // open WhatsApp web/phone if available
+  // show completion message
+  alert('تم إتمام الشراء.');
+
+  // prepare notification message with summary
+  const totalItems = cart.length;
+  const distinct = [...new Set(cart.map(i=>i.name))].length;
+  const totalPrice = cart.reduce((sum,i)=>sum+i.price,0);
+  const message = encodeURIComponent(`تم الشراء: ${totalItems} عنصر (${distinct} منتج مختلف) - الإجمالي ${totalPrice} جنيه`);
+
+  // open WhatsApp link
   window.open(`https://wa.me/201097074813?text=${message}`, '_blank');
-  // try to launch SMS app (on mobile devices this will prompt user)
+  // attempt to open SMS
   window.location.href = 'sms:+201097074813?body=' + message;
-  
+
   cart=[];
   renderCart();
 }
